@@ -1,0 +1,941 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RIYA | Happequity Financial Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy: #0A2540;
+  --navy-mid: #163456;
+  --electric: #1A6FD4;
+  --electric-bright: #2B87F5;
+  --teal: #1B7A8C;
+  --sky: #E8F4FC;
+  --sky-mid: #C2DDF5;
+  --white: #FFFFFF;
+  --off-white: #F6FAFE;
+  --gray-light: #EDF1F5;
+  --gray-mid: #A8BCC8;
+  --gray-text: #546E7A;
+  --text-dark: #0D2137;
+  --success: #127A52;
+  --success-bg: #E6F5EE;
+  --danger: #C0392B;
+  --danger-bg: #FDECEA;
+  --shadow-sm: 0 2px 10px rgba(10,37,64,0.07);
+  --shadow-md: 0 8px 32px rgba(10,37,64,0.11);
+  --shadow-lg: 0 24px 60px rgba(10,37,64,0.17);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --tr: all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:var(--font-body);background:var(--off-white);color:var(--text-dark);overflow:hidden;}
+
+/* HEADER */
+.header{position:fixed;top:0;left:0;right:0;z-index:200;height:62px;background:var(--white);border-bottom:1px solid var(--sky-mid);display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:var(--shadow-sm);}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-logo{height:44px;width:auto;object-fit:contain;}
+.brand-logo-text{width:44px;border-radius:8px;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.25rem;font-weight:600;}
+.brand-divider{width:1px;height:28px;background:var(--sky-mid);}
+.brand-sub{display:flex;flex-direction:column;}
+.brand-riya{font-family:var(--font-display);font-size:1rem;font-weight:600;color:var(--navy);line-height:1;}
+.brand-desc{font-size:0.68rem;color:var(--gray-text);letter-spacing:0.4px;margin-top:2px;}
+.header-right{display:flex;align-items:center;gap:14px;}
+.status-pill{display:flex;align-items:center;gap:6px;font-size:0.76rem;font-weight:500;color:var(--success);background:var(--success-bg);padding:5px 12px;border-radius:20px;}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--success);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.35}}
+.disc-badge{font-size:0.7rem;color:var(--gray-text);background:var(--gray-light);padding:4px 10px;border-radius:6px;}
+@media(max-width:640px){.disc-badge{display:none;}}
+
+/* LAYOUT */
+.app-layout{display:flex;height:100vh;padding-top:62px;}
+
+/* SIDEBAR */
+.sidebar{width:290px;flex-shrink:0;background:var(--navy);display:flex;flex-direction:column;overflow:hidden;position:relative;}
+.sidebar::before{content:'';position:absolute;top:0;left:0;right:0;height:180px;background:radial-gradient(ellipse at top left,rgba(26,111,212,0.18) 0%,transparent 65%);pointer-events:none;}
+.sidebar-scroll{flex:1;overflow-y:auto;padding:24px 18px;position:relative;z-index:1;}
+.sidebar-scroll::-webkit-scrollbar{width:3px;}
+.sidebar-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:2px;}
+.sb-heading{font-size:0.65rem;font-weight:600;color:rgba(255,255,255,0.4);letter-spacing:1.3px;text-transform:uppercase;margin-bottom:12px;margin-top:4px;}
+.prod-card{background:rgba(255,255,255,0.055);border:1px solid rgba(255,255,255,0.09);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:var(--tr);}
+.prod-card:hover{background:rgba(255,255,255,0.1);border-color:rgba(43,135,245,0.38);transform:translateX(3px);}
+.prod-card-top{display:flex;align-items:center;gap:10px;margin-bottom:3px;}
+.prod-icon{font-size:1.05rem;}
+.prod-name{font-size:0.82rem;font-weight:600;color:var(--white);}
+.prod-desc{font-size:0.72rem;color:rgba(255,255,255,0.45);line-height:1.4;}
+.sb-divider{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:16px 0;}
+.chip-list{display:flex;flex-direction:column;gap:7px;}
+.chip{padding:8px 13px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:7px;font-size:0.78rem;color:rgba(255,255,255,0.65);cursor:pointer;text-align:left;transition:var(--tr);font-family:var(--font-body);}
+.chip:hover{background:rgba(43,135,245,0.16);border-color:rgba(43,135,245,0.35);color:var(--white);}
+
+/* TRAFFIC PANEL */
+.traffic-panel{padding:16px 18px;border-top:1px solid rgba(255,255,255,0.07);background:rgba(0,0,0,0.18);position:relative;z-index:1;}
+.traffic-label{font-size:0.63rem;color:rgba(255,255,255,0.35);letter-spacing:0.9px;text-transform:uppercase;margin-bottom:8px;}
+.traffic-stats{display:flex;gap:12px;}
+.t-stat{flex:1;}
+.t-num{font-size:1.3rem;font-weight:600;color:var(--white);font-family:var(--font-display);line-height:1;}
+.t-sub{font-size:0.65rem;color:rgba(255,255,255,0.35);margin-top:2px;}
+
+/* CHAT MAIN */
+.chat-area{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;position:relative;}
+.chat-messages{flex:1;overflow-y:auto;padding:28px 24px;display:flex;flex-direction:column;gap:18px;scroll-behavior:smooth;}
+.chat-messages::-webkit-scrollbar{width:4px;}
+.chat-messages::-webkit-scrollbar-thumb{background:var(--sky-mid);border-radius:2px;}
+
+/* MESSAGES */
+.msg-wrap{display:flex;gap:10px;max-width:80%;}
+.msg-wrap.user{align-self:flex-end;flex-direction:row-reverse;}
+.msg-wrap.riya{align-self:flex-start;}
+.msg-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:600;overflow:hidden;}
+.msg-wrap.riya .msg-avatar{background:var(--navy);color:var(--white);font-family:var(--font-display);font-size:0.9rem;}
+.msg-wrap.riya .msg-avatar img{width:100%;height:100%;object-fit:cover;}
+.msg-wrap.user .msg-avatar{background:var(--sky);color:var(--electric);border:1px solid var(--sky-mid);font-size:0.78rem;}
+.msg-col{display:flex;flex-direction:column;max-width:100%;}
+.msg-bubble{padding:13px 17px;border-radius:var(--radius-md);font-size:0.875rem;line-height:1.65;}
+.msg-wrap.riya .msg-bubble{background:var(--white);border:1px solid var(--gray-light);color:var(--text-dark);box-shadow:var(--shadow-sm);border-bottom-left-radius:4px;}
+.msg-wrap.user .msg-bubble{background:var(--electric);color:var(--white);border-bottom-right-radius:4px;}
+.msg-bubble strong{font-weight:600;}
+.msg-bubble ul{padding-left:18px;margin:7px 0;}
+.msg-bubble li{margin-bottom:3px;}
+.msg-bubble a{color:var(--electric-bright);text-decoration:underline;}
+.msg-wrap.user .msg-bubble a{color:rgba(255,255,255,0.82);}
+.msg-time{font-size:0.65rem;color:var(--gray-mid);margin-top:4px;padding:0 3px;align-self:flex-end;}
+
+/* TYPING */
+.typing-wrap{align-self:flex-start;display:flex;gap:10px;}
+.typing-bubble{background:var(--white);border:1px solid var(--gray-light);padding:13px 17px;border-radius:var(--radius-md);border-bottom-left-radius:4px;display:flex;gap:5px;align-items:center;box-shadow:var(--shadow-sm);}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--gray-mid);animation:tdot 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:0.2s;}
+.typing-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes tdot{0%,60%,100%{transform:translateY(0);opacity:0.35}30%{transform:translateY(-5px);opacity:1}}
+
+/* INPUT */
+.chat-input-area{padding:14px 24px 18px;background:var(--white);border-top:1px solid var(--gray-light);}
+.input-row{display:flex;gap:10px;align-items:flex-end;}
+.input-box{flex:1;min-height:46px;max-height:120px;padding:12px 16px;border:1.5px solid var(--sky-mid);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.875rem;color:var(--text-dark);outline:none;resize:none;line-height:1.5;background:var(--off-white);transition:var(--tr);}
+.input-box:focus{border-color:var(--electric);background:var(--white);}
+.input-box::placeholder{color:var(--gray-mid);}
+.send-btn{width:46px;height:46px;border-radius:var(--radius-sm);background:var(--navy);border:none;color:var(--white);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:var(--tr);font-size:1rem;}
+.send-btn:hover{background:var(--electric);}
+.send-btn:active{transform:scale(0.96);}
+.send-btn:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
+.input-hint{font-size:0.68rem;color:var(--gray-mid);margin-top:7px;text-align:center;}
+
+/* FOOTER DISCLAIMER */
+.footer-disc{text-align:center;padding:7px 20px;font-size:0.67rem;color:var(--gray-mid);background:var(--white);border-top:1px solid var(--gray-light);}
+
+/* WELCOME CARD */
+.welcome-card{background:var(--white);border:1px solid var(--gray-light);border-radius:var(--radius-lg);padding:26px 26px 22px;box-shadow:var(--shadow-sm);max-width:620px;align-self:flex-start;}
+.welcome-greeting{font-family:var(--font-display);font-size:1.3rem;color:var(--navy);margin-bottom:7px;}
+.welcome-sub{font-size:0.85rem;color:var(--gray-text);line-height:1.6;margin-bottom:16px;}
+.sug-chips{display:flex;flex-wrap:wrap;gap:7px;}
+.sug-chip{padding:6px 13px;border-radius:20px;border:1.5px solid var(--sky-mid);background:var(--sky);font-size:0.78rem;color:var(--electric);cursor:pointer;transition:var(--tr);font-family:var(--font-body);}
+.sug-chip:hover{background:var(--electric);color:var(--white);border-color:var(--electric);}
+
+/* LEAD OVERLAY */
+.lead-overlay{position:absolute;inset:0;background:rgba(10,37,64,0.88);backdrop-filter:blur(6px);display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px;z-index:100;animation:fadeUp 0.32s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.lead-overlay.active{display:flex;}
+.lead-card{background:var(--white);border-radius:var(--radius-lg);padding:32px 28px;max-width:440px;width:100%;box-shadow:var(--shadow-lg);position:relative;max-height:90vh;overflow-y:auto;}
+.lead-card::-webkit-scrollbar{width:3px;}
+.lead-card::-webkit-scrollbar-thumb{background:var(--sky-mid);border-radius:2px;}
+.lead-dismiss{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;background:var(--gray-light);border:none;cursor:pointer;font-size:0.9rem;color:var(--gray-text);display:flex;align-items:center;justify-content:center;transition:var(--tr);}
+.lead-dismiss:hover{background:var(--danger-bg);color:var(--danger);}
+.lead-eyebrow{font-size:0.68rem;font-weight:600;color:var(--teal);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.lead-title{font-family:var(--font-display);font-size:1.4rem;font-weight:600;color:var(--navy);margin-bottom:8px;line-height:1.2;}
+.lead-desc{font-size:0.82rem;color:var(--gray-text);line-height:1.55;margin-bottom:12px;}
+.lead-perks{display:flex;flex-direction:column;gap:5px;margin-bottom:16px;padding:12px 14px;background:var(--sky);border-radius:var(--radius-sm);border:1px solid var(--sky-mid);}
+.lead-perk{display:flex;align-items:center;gap:7px;font-size:0.8rem;color:var(--text-dark);}
+.perk-check{color:var(--success);font-weight:700;font-size:0.85rem;flex-shrink:0;}
+.form-group{margin-bottom:12px;}
+.form-label{display:block;font-size:0.78rem;font-weight:600;color:var(--navy);margin-bottom:4px;}
+.form-control{width:100%;padding:9px 13px;border:1.5px solid var(--sky-mid);border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.85rem;color:var(--text-dark);outline:none;background:var(--off-white);transition:var(--tr);}
+.form-control:focus{border-color:var(--electric);background:var(--white);}
+.form-control::placeholder{color:var(--gray-mid);}
+select.form-control{cursor:pointer;}
+.form-row{display:flex;gap:10px;}
+.form-row .form-group{flex:1;}
+.submit-btn{width:100%;padding:12px;background:var(--navy);color:var(--white);border:none;border-radius:var(--radius-sm);font-family:var(--font-body);font-size:0.9rem;font-weight:600;cursor:pointer;transition:var(--tr);margin-top:4px;}
+.submit-btn:hover{background:var(--electric);}
+.submit-btn:disabled{opacity:0.55;cursor:not-allowed;}
+.skip-link{display:block;text-align:center;margin-top:10px;font-size:0.77rem;color:var(--gray-text);cursor:pointer;text-decoration:underline;}
+.skip-link:hover{color:var(--text-dark);}
+.form-note{font-size:0.67rem;color:var(--gray-mid);text-align:center;margin-top:8px;}
+.lead-error{color:var(--danger);font-size:0.78rem;margin-bottom:8px;display:none;}
+.success-state{display:none;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:16px 0;}
+.success-icon{width:60px;height:60px;border-radius:50%;background:var(--success-bg);color:var(--success);font-size:1.7rem;display:flex;align-items:center;justify-content:center;margin:0 auto;}
+.success-title{font-family:var(--font-display);font-size:1.3rem;font-weight:600;color:var(--navy);}
+.success-msg{font-size:0.82rem;color:var(--gray-text);line-height:1.55;max-width:280px;}
+
+/* RESPONSIVE */
+@media(max-width:720px){.sidebar{display:none;}.chat-messages{padding:18px 14px;}.chat-input-area{padding:12px 14px 16px;}.welcome-card{padding:20px 16px;}.lead-card{padding:24px 18px;}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="brand">
+    <div class="brand-logo brand-logo-text" aria-label="Happequity">H</div>
+    <div class="brand-divider"></div>
+    <div class="brand-sub">
+      <span class="brand-riya">RIYA</span>
+      <span class="brand-desc">Financial Intelligence Assistant</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="status-pill"><span class="status-dot"></span>Online</div>
+    <div class="disc-badge">Educational use only · Not investment advice</div>
+  </div>
+</header>
+
+<!-- APP -->
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-scroll">
+      <div class="sb-heading">Products & Services</div>
+
+      <div class="prod-card" onclick="askAbout('Tell me about HDFC Sanchay Plus — what are the variants and how does it work?')">
+        <div class="prod-card-top"><span class="prod-icon">🏦</span><span class="prod-name">HDFC Sanchay Plus</span></div>
+        <div class="prod-desc">Guaranteed income life insurance savings plan</div>
+      </div>
+      <div class="prod-card" onclick="askAbout('What are the health insurance options available at Happequity?')">
+        <div class="prod-card-top"><span class="prod-icon">❤️‍🩹</span><span class="prod-name">Health Insurance</span></div>
+        <div class="prod-desc">Care, Niva Bupa, Tata AIG, ICICI Lombard, HDFC Ergo</div>
+      </div>
+      <div class="prod-card" onclick="askAbout('Tell me about motor insurance options at Happequity')">
+        <div class="prod-card-top"><span class="prod-icon">🚗</span><span class="prod-name">Motor Insurance</span></div>
+        <div class="prod-desc">Tata, HDFC, Acko, Digit, IndusInd coverage</div>
+      </div>
+      <div class="prod-card" onclick="askAbout('How do SIPs and mutual funds work? What funds does Happequity recommend?')">
+        <div class="prod-card-top"><span class="prod-icon">📈</span><span class="prod-name">SIPs & Mutual Funds</span></div>
+        <div class="prod-desc">Risk-categorised funds from low to aggressive</div>
+      </div>
+      <div class="prod-card" onclick="askAbout('How do I open a free demat account with Wealthy App?')">
+        <div class="prod-card-top"><span class="prod-icon">💹</span><span class="prod-name">Wealthy Demat Account</span></div>
+        <div class="prod-desc">₹0 opening · ₹0 AMC Year 1 · Free options course</div>
+      </div>
+      <div class="prod-card" onclick="askAbout('What TradingGuru courses are available and what are the prices?')">
+        <div class="prod-card-top"><span class="prod-icon">📚</span><span class="prod-name">TradingGuru Courses</span></div>
+        <div class="prod-desc">Options, Fundamental, Technical & Fakeout strategies</div>
+      </div>
+      <div class="prod-card" onclick="askAbout('Tell me about travel and marine insurance options')">
+        <div class="prod-card-top"><span class="prod-icon">✈️</span><span class="prod-name">Travel & Marine Insurance</span></div>
+        <div class="prod-desc">Tata & Care travel · Marine coverage available</div>
+      </div>
+      <div class="prod-card" onclick="askAbout('Tell me about the Start Smart Investing Starter Kits — what do I get?')">
+        <div class="prod-card-top"><span class="prod-icon">🚀</span><span class="prod-name">Start Smart Kits</span></div>
+        <div class="prod-desc">Starter ₹29 · Growth ₹49 · Pro Investor ₹99</div>
+      </div>
+
+      <hr class="sb-divider">
+      <div class="sb-heading">Quick Topics</div>
+      <div class="chip-list">
+        <button class="chip" onclick="askAbout('What is the difference between ELSS, large-cap and small-cap mutual funds?')">ELSS vs large-cap vs small-cap?</button>
+        <button class="chip" onclick="askAbout('Explain Section 80C tax benefits for mutual fund investments')">Section 80C tax benefits</button>
+        <button class="chip" onclick="askAbout('What are the 12 types of financial scams I should know about?')">12 scams to know (FinXForce)</button>
+        <button class="chip" onclick="askAbout('What is a UPI collect scam and how do I avoid it?')">UPI collect scam explained</button>
+        <button class="chip" onclick="askAbout('How much should a beginner invest in SIP every month?')">SIP amount for beginners</button>
+        <button class="chip" onclick="askAbout('What is the difference between Sanchay Plus Guaranteed Maturity and Long Term Income?')">Sanchay Plus variants</button>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- CHAT -->
+  <main class="chat-area">
+    <div class="chat-messages" id="chatMessages">
+      <div class="welcome-card">
+        <div class="welcome-greeting">Namaste! I am RIYA 🙏</div>
+        <div class="welcome-sub">Your dedicated financial intelligence assistant from <strong>Happequity Investments & Finance</strong>. I can guide you through mutual funds, insurance plans, demat accounts, trading education, and help protect you from financial scams — all with complete transparency and zero pressure.</div>
+        <div class="sug-chips">
+          <button class="sug-chip" onclick="askAbout('How do I start investing with a small amount in India?')">Start investing small</button>
+          <button class="sug-chip" onclick="askAbout('What is HDFC Sanchay Plus and what are its variants?')">HDFC Sanchay Plus</button>
+          <button class="sug-chip" onclick="askAbout('Which mutual fund is best for a beginner with low risk?')">Best fund for beginners</button>
+          <button class="sug-chip" onclick="askAbout('What is a digital arrest scam and how do I protect myself?')">Digital arrest scam</button>
+          <button class="sug-chip" onclick="askAbout('Tell me about the Start Smart Investing kits')">Start Smart Kits ₹29</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEAD OVERLAY -->
+    <div class="lead-overlay" id="leadOverlay">
+      <div class="lead-card">
+        <button class="lead-dismiss" onclick="dismissLead()" title="Close">✕</button>
+        <div id="formState">
+          <div class="lead-eyebrow">Happequity · Public Welfare Initiative</div>
+          <div class="lead-title">Get Your Free Financial Safety Kit</div>
+          <div class="lead-desc">Happequity's FinXForce team has compiled the <strong>2026 Cyber Case Files</strong> — 12 real-world scam patterns explained in detail with agent directives to protect yourself.</div>
+          <div class="lead-perks">
+            <div class="lead-perk"><span class="perk-check">✓</span> Delivered instantly to your email</div>
+            <div class="lead-perk"><span class="perk-check">✓</span> WhatsApp confirmation sent to you</div>
+            <div class="lead-perk"><span class="perk-check">✓</span> Our advisor will reach out to assist you</div>
+            <div class="lead-perk"><span class="perk-check">✓</span> Zero spam — one guide, one confirmation</div>
+          </div>
+          <div class="lead-error" id="leadError"></div>
+          <div class="form-group">
+            <label class="form-label">Full Name *</label>
+            <input class="form-control" type="text" id="leadName" placeholder="Your full name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address *</label>
+            <input class="form-control" type="email" id="leadEmail" placeholder="you@example.com">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">WhatsApp Number</label>
+              <input class="form-control" type="tel" id="leadPhone" placeholder="+91 98765 43210">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Area of Interest</label>
+              <select class="form-control" id="leadInterest">
+                <option value="">Select one</option>
+                <option value="HDFC Sanchay Plus">HDFC Sanchay Plus</option>
+                <option value="Health Insurance">Health Insurance</option>
+                <option value="Motor Insurance">Motor Insurance</option>
+                <option value="SIP & Mutual Funds">SIP & Mutual Funds</option>
+                <option value="Wealthy Demat Account">Wealthy Demat Account</option>
+                <option value="TradingGuru Courses">TradingGuru Courses</option>
+                <option value="Start Smart Kits">Start Smart Investing Kits</option>
+                <option value="Travel Insurance">Travel Insurance</option>
+                <option value="General Advice">General Financial Advice</option>
+              </select>
+            </div>
+          </div>
+          <button class="submit-btn" id="submitBtn" onclick="handleLeadSubmit()">Send Me the Safety Kit →</button>
+          <span class="skip-link" onclick="dismissLead()">I'll skip for now — continue chatting</span>
+          <div class="form-note">Your data is used solely to deliver the guide and for Happequity's advisory team. No spam, ever.</div>
+        </div>
+        <div class="success-state" id="successState">
+          <div class="success-icon">✓</div>
+          <div class="success-title">You're all set!</div>
+          <div class="success-msg">Your FinXForce 2026 Case Files guide is on its way to your email and WhatsApp. Our advisor will be in touch.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <div class="input-row">
+        <textarea class="input-box" id="userInput" placeholder="Ask about mutual funds, insurance, demat accounts, or scam awareness..." rows="1"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">&#10148;</button>
+      </div>
+      <div class="input-hint">Enter to send · Shift+Enter for new line · RIYA provides general financial education, not investment advice</div>
+    </div>
+    <div class="footer-disc">⚠️ RIYA is an educational AI assistant. All responses are for general awareness only. Consult a SEBI-registered advisor before making investment decisions. · Happequity Investments & Finance</div>
+  </main>
+
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURATION — Update these values before deploying
+   ============================================================ */
+const CONFIG = {
+  GEMINI_API_KEY: "",
+  GEMINI_MODEL: "gemini-2.5-flash",
+  APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzkbdlEM2FVkykbhyjcXmNyS85vEN9zaDxFZLvPGDsiQKeK1hVVxb5f8MotxJf--7HZ/exec",
+  WHATSAPP_API_URL:  "",
+  WHATSAPP_TOKEN:    "",
+  LEAD_TRIGGER_AFTER: 2
+};
+
+/* ============================================================
+   RIYA KNOWLEDGE BASE — Full system prompt
+   ============================================================ */
+const SYSTEM_PROMPT = `You are RIYA (Registered Investment & Yield Advisor), the intelligent and friendly financial assistant for Happequity Investments & Finance. You are professional, warm, empathetic, and radically transparent. You educate first and never apply pressure.
+
+PERSONALITY: Speak like a knowledgeable, caring advisor who genuinely wants to help. Use simple language. Avoid excessive jargon. When jargon is necessary, explain it. Be concise but complete.
+
+CORE RULES:
+- NEVER guarantee profits or fixed returns on market-linked instruments (mutual funds, equities).
+- ALWAYS clearly distinguish guaranteed products (Sanchay Plus) from market-linked products (mutual funds, demat).
+- End EVERY investment-related response with: "⚠️ This is general educational information. Please consult a SEBI-registered advisor and review official documentation before investing."
+- If asked for specific portfolio advice, explain you can guide on general principles but a licensed advisor should be consulted for personalised plans.
+- Be honest about risks. Don't downplay them.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HAPPEQUITY PRODUCTS & SERVICES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. LIFE INSURANCE — HDFC SANCHAY PLUS (Savings & Investment Plans)
+   Type: Traditional, non-linked, non-participating plan. NOT a ULIP. ZERO market risk.
+   THREE VARIANTS:
+   a) Sanchay Plus (Guaranteed Maturity): Lump sum payout at maturity. Ideal for goal-based saving (child education, retirement corpus).
+   b) Sanchay Plus (Long Term Income): Regular income stream for a defined period after the policy term. Ideal for creating a pension-like income.
+   c) Sanchay Par Advantage: Participating plan with bonuses on top of guaranteed benefits.
+   
+   KEY FEATURES FOR ALL VARIANTS:
+   - Zero fund management fees (not a market-linked product)
+   - Built-in mortality cover (life insurance component)
+   - Tax-free maturity/income under Section 10(10D) of Income Tax Act
+   - Payout structure depends on Premium Paying Term (PPT) and Policy Term (PT) chosen at inception
+   - Best for: Risk-averse individuals wanting guaranteed income, tax planning, retirement, child education goals
+   - Official illustration calculator: https://salesdiary.hdfclife.com/TEBTParPortal/portal.do?_pageid=sec_calculatorPage&_portalid=sec#
+
+2. HEALTH INSURANCE (Partners)
+   - Care Health Insurance: Known for wide hospital network and comprehensive coverage
+   - Niva Bupa (formerly Max Bupa): Strong cashless network, wellness benefits
+   - Tata AIG: Reliable large insurer, good critical illness add-ons
+   - ICICI Lombard: Large network, strong claim settlement ratio
+   - HDFC Ergo: HDFC group reliability, good for family floater plans
+   Key advice: Always read policy document, check claim settlement ratio (aim >95%), disclose pre-existing conditions honestly, compare sum insured options.
+
+3. MOTOR INSURANCE (Partners)
+   - Tata (via Tata AIG): Comprehensive coverage options
+   - HDFC (via HDFC Ergo): Reliable, strong network
+   - Acko: Digital-first, fast claim processing, competitive pricing
+   - Digit Insurance: Flexible plans, good for used cars
+   - IndusInd: Bank-linked, competitive bundled offers
+   Types: Third-party liability (mandatory by law) vs. Comprehensive (recommended for protection).
+
+4. MUTUAL FUNDS & SIPs
+   What is SIP: Systematic Investment Plan. Invest a fixed amount monthly. Benefits from rupee-cost averaging and power of compounding. Minimum ₹500/month.
+
+   HIGH RISK — HIGH RETURN (Risk Score 75-80):
+   - Axis Value Fund (Risk: 75): Invests in undervalued companies with good fundamentals. Value investing approach.
+   - Bandhan Small-cap Fund (Risk: 80): Invests in small-cap companies. High growth potential, high volatility.
+   - Edelweiss Small-cap Fund (Risk: 80): Also small-cap focused. Good for long 10+ year horizon.
+
+   MODERATE RISK — MODERATE RETURN (Risk Score 40-60):
+   - Bandhan Hybrid Equity Fund (Risk: 50): 65-80% equity, rest in bonds. Balanced approach.
+   - Bandhan Midcap Fund (Risk: 60): Midcap companies — between large and small cap risk/return.
+   - Bandhan Multi-cap Fund (Risk: 40): Diversified across Large, Mid, and Small caps.
+   - Edelweiss Aggressive Hybrid (Risk: 55): ~50% large-cap, balanced overall.
+   - Edelweiss Balanced Advantage Fund (Risk: 50): Dynamic asset allocation between equity and debt.
+   - Samco ELSS Tax Saver Fund (Risk: 50): ELSS with balanced portfolio + tax benefits.
+   - Mahindra Manulife ELSS Fund (Risk: 55): ELSS with balanced portfolio.
+   - Baroda BNP Paribas ELSS Fund (Risk: 55): ELSS with balanced portfolio.
+
+   LOW RISK — STABLE RETURN (Risk Score 25-30):
+   - Bandhan Large Cap Fund (Risk: 25): Top 100 companies. Most stable equity option.
+   - Union Large-cap Fund (Risk: 25): Large-cap focus. Conservative equity investor.
+   - Tata Dividend Yield Fund (Risk: 30): High dividend-paying companies. Good for passive income.
+   - Quant Large-cap Fund (Risk: 25): Quant-driven large-cap strategy.
+
+   ELSS (Equity Linked Savings Scheme) — TAX SAVER FUNDS:
+   - Cannot sell for 3 years from purchase date (lock-in period)
+   - After 3 years: Long Term Capital Gains (LTCG) tax at 10% if total gains exceed ₹1 lakh in a financial year
+   - TAX BENEFIT: Claim deduction under Section 80C — up to ₹1.5 lakh per year from taxable income
+   - Best for investors who also want to save income tax
+
+   TAXATION FOR ALL MUTUAL FUNDS:
+   - LTCG (held >1 year for equity funds): 10% on gains above ₹1 lakh per year
+   - STCG (sold within 1 year): 15% flat on gains
+   - Debt fund gains: Taxed as per income tax slab
+
+5. WEALTHY APP DEMAT ACCOUNT
+   - Account opening charges: ₹0 (zero)
+   - Annual Maintenance Charge (AMC): ₹0 for first year
+   - Brokerage on delivery trades: ₹0
+   - Bonus on opening: FREE Options Trading Course worth ₹999
+   - Platform features: Stocks, mutual funds, IPOs, F&O trading
+   - Best for: Beginners wanting a zero-cost entry into markets
+
+6. TRADINGGURU COURSES (https://thetradinguru.com/)
+   - Fundamental Analysis Course (Live Project): ₹1,999 — Learn to analyse companies, read balance sheets, assess business quality
+   - Technical Analysis Masterclass: ₹999 — Chart reading, price action, indicators, trend analysis
+   - Options Strategy Course: ₹999 — Calls, puts, spreads, options Greeks, income strategies
+   - Fakeout Strategy Course: ₹1,999 — Advanced strategy to identify and profit from false breakouts
+   All courses: Lifetime access, practical application, taught by experienced traders.
+
+7. TRAVEL INSURANCE (Partners)
+   - Tata (Tata AIG): Comprehensive international and domestic travel coverage
+   - Care Health: Medical emergency cover during travel
+   Covers: Medical emergencies, trip cancellation, lost baggage, flight delays.
+
+8. MARINE INSURANCE
+   Available for businesses needing cargo and goods-in-transit coverage.
+
+9. START SMART INVESTING KITS (Campaign Product)
+   - Starter Kit ₹29: Scam Awareness Guide (PDF) + Basic Investing Guide — Perfect entry point
+   - Growth Kit ₹49: Everything in Starter + Course Completion Certificate + Assisted Demat Account Setup
+   - Pro Investor Kit ₹99: Everything in Growth + Expert Consultancy + Weekly Stock Picks + Portfolio Strategy + Economic Times Analysis Report + Options Trading & Strategies Course
+   Campaign hashtags: #SummerWithHappequity #HappequityIntern
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FINXFORCE SCAM AWARENESS — 12 CASE FILES (2026 Shadow Protocol)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Case #01 — THE PHISHING REFLECTION: Scammers create pixel-perfect fake bank websites using AI. They use Punycode to make URLs look identical. They steal your session token to bypass 2FA. Rule: NEVER click bank links. Always type URLs manually. Use your official bank app.
+
+Case #02 — THE INVISIBLE PRISON (Digital Arrest): Fake CBI/police officers on video call claim you're "digitally arrested." They isolate you for hours and demand money. LEGAL FACT: No Indian law agency (CBI, Police, ED) ever arrests anyone over a video call. Hang up immediately. Call local police station to verify.
+
+Case #03 — THE NARCOTICS TRAP (Customs Fraud): A fake customs officer calls saying a package in your name contains drugs. They demand an "investigation fee." Reality: Customs/Narcotics departments NEVER ask for money to clear investigations. You can't be responsible for packages you didn't order.
+
+Case #04 — THE MYSTERY DELIVERY (COD Heist): Scammers send fake low-value COD packages betting households pay without verifying. Always maintain a shared family order list. You have the right to refuse unverified deliveries.
+
+Case #05 — THE TROJAN UPDATE (Banking APK): Fake bank app update links install malware that reads OTPs silently. RULE: ONLY download apps from Google Play Store or Apple App Store. Never install APK files from links.
+
+Case #06 — THE REMOTE SHADOW (Screen Share Scam): Fake "Amazon support" or tech support asks you to download AnyDesk or TeamViewer. They watch you enter your UPI PIN. RULE: No legitimate company will ever ask you to download a remote access app. Never open banking apps during screen sharing.
+
+Case #07 — THE TASKMASTER'S LIE (Job Scams / Fake Tasks): Telegram/WhatsApp groups pay small amounts first (₹200) then ask you to "invest" to unlock bigger earnings. It's a Ponzi scheme. RULE: Real jobs pay you. You NEVER pay fees to receive your salary. Any work-from-home involving "likes" on Telegram = scam.
+
+Case #08 — THE VOICE CLONE (AI Kinship Scam): AI clones a family member's voice from 10 seconds of social media content. Combined with caller ID spoofing, it sounds exactly like your loved one calling in emergency. PROTECTION: Set a secret family "safe word." Call back on the known number (don't use redial). Limit voice/video exposure on social media.
+
+Case #09 — THE GOLDEN TICKET (Lottery Fraud): Glossy PDF says you won a luxury car/prize. They ask for "GST" before delivering. FACT: In India, lottery tax is deducted AT SOURCE (TDS). You never pay tax BEFORE receiving a prize. If you didn't enter, you can't win.
+
+Case #10 — THE RED SCREEN (Scareware/Tech Support): Browser freezes with loud beeping and "CRITICAL ERROR — HACKER DETECTED" message with a phone number. It's just a website trick. Force quit your browser (Ctrl+Alt+Del / Cmd+Option+Esc). Real companies never put phone numbers in pop-up warnings.
+
+Case #11 — THE REVERSE TRANSFER (UPI Collect Request Trick): Scammer says they "accidentally" sent you money and asks you to "return" it by clicking OK on a notification. The notification is actually a PAYMENT request (not a receive). GOLDEN RULE: You ONLY enter your UPI PIN to SEND money. You NEVER need a PIN to receive money. Read the screen: if it says PAY or DEBIT, money is LEAVING your account.
+
+Case #12 — THE FALSE HEALER (Fake Medical Charity): Stolen hospital videos used on Instagram with fake QR codes to collect donations. VERIFY: Only donate to charities with an 80G certificate. Use verified platforms (Ketto, Milaap, GiveIndia). Use Google Lens to reverse search images.
+
+EMERGENCY REPORTING: If you've been scammed, call 1930 immediately (the first 60 minutes are critical). Report at www.cybercrime.gov.in. Block all cards and UPI access via your bank app.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ABOUT HAPPEQUITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Happequity Investments & Finance is a growing financial services startup committed to making quality investment products and financial literacy accessible to everyday Indians. The FinXForce team runs the Cyber Awareness wing. The team runs the "Start Smart Investing" internship campaign helping young Indians learn finance while driving social impact.
+
+When users want personalised help beyond general education, mention they can share their details and Happequity's licensed advisory team will reach out. Always be welcoming, never pushy.`;
+
+/* ── STATE ── */
+let conversationHistory = [];
+let aiResponseCount = 0;
+let leadShown = false;
+let leadSubmitted = false;
+let userMsgCount = 0;
+let sessionStart = Date.now();
+let visitorId = Math.random().toString(36).slice(2,7).toUpperCase();
+
+/* ── TIMER ── */
+setInterval(() => {
+  const el = document.getElementById('sessionTime');
+  if (el) el.textContent = Math.floor((Date.now()-sessionStart)/60000) + 'm';
+}, 15000);
+
+/* ── TRAFFIC LOG ── */
+function logTraffic(payload) {
+  if (!CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL') return;
+  fetch(CONFIG.APPS_SCRIPT_URL, {
+    method:'POST',
+    mode:'no-cors',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify({type:'traffic', visitorId, ...payload})
+  }).catch(()=>{});
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  logTraffic({event:'page_visit', timestamp:new Date().toISOString(), referrer:document.referrer||'direct'});
+});
+
+/* ── FORMAT MESSAGE ── */
+function fmt(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/━+/g,'<hr style="border:none;border-top:1px solid #EDF1F5;margin:10px 0;">')
+    .replace(/\n\n/g,'</p><p style="margin-top:8px;">')
+    .replace(/\n- /g,'<br>• ')
+    .replace(/\n/g,'<br>')
+    .replace(/^/,'<p>').replace(/$/,'</p>')
+    .replace(/(https?:\/\/[^\s<"]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>');
+}
+
+/* ── APPEND MESSAGE ── */
+function appendMsg(role, text) {
+  const container = document.getElementById('chatMessages');
+  const wrap = document.createElement('div');
+  wrap.className = `msg-wrap ${role}`;
+
+  const avatar = document.createElement('div');
+  avatar.className = 'msg-avatar';
+  if (role === 'riya') {
+    avatar.textContent = 'R';
+  } else {
+    avatar.textContent = 'You';
+  }
+
+  const col = document.createElement('div');
+  col.className = 'msg-col';
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.innerHTML = fmt(text);
+  const time = document.createElement('div');
+  time.className = 'msg-time';
+  time.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  col.appendChild(bubble);
+  col.appendChild(time);
+  wrap.appendChild(avatar);
+  wrap.appendChild(col);
+  container.appendChild(wrap);
+  container.scrollTop = container.scrollHeight;
+}
+
+/* ── TYPING INDICATOR ── */
+function showTyping() {
+  const c = document.getElementById('chatMessages');
+  if (document.getElementById('typingInd')) return;
+  const w = document.createElement('div');
+  w.className = 'typing-wrap';
+  w.id = 'typingInd';
+  const av = document.createElement('div');
+  av.className = 'msg-avatar';
+  av.textContent = 'R';
+  const b = document.createElement('div');
+  b.className = 'typing-bubble';
+  b.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  w.appendChild(av); w.appendChild(b);
+  c.appendChild(w);
+  c.scrollTop = c.scrollHeight;
+}
+function hideTyping() { const e=document.getElementById('typingInd'); if(e) e.remove(); }
+
+/* ── DEMO RESPONSES ── */
+function demoReply(text) {
+  const t = text.toLowerCase();
+  if (t.includes('sanchay') || t.includes('hdfc') || t.includes('guaranteed')) {
+    return `**HDFC Sanchay Plus** is a traditional life insurance savings plan — meaning your money has **zero market risk** and returns are guaranteed.
+
+There are **3 variants**:
+- **Guaranteed Maturity**: Lump sum payout at the end — ideal for a child's education or retirement corpus
+- **Long Term Income**: Regular income stream for years after the policy term — like a personal pension
+- **Sanchay Par Advantage**: Participating plan with guaranteed benefits + bonuses
+
+**Key benefits for all variants:**
+- Zero fund management fees
+- Life insurance cover built in
+- Tax-free payouts under Section 10(10D)
+- No market risk whatsoever
+
+For exact illustrations, use the official calculator:
+https://salesdiary.hdfclife.com/TEBTParPortal/portal.do?_pageid=sec_calculatorPage&_portalid=sec#
+
+⚠️ This is general educational information. Please consult a SEBI-registered advisor and review official documentation before investing.`;
+  }
+  if (t.includes('sip') || t.includes('mutual fund') || t.includes('elss')) {
+    return `**Systematic Investment Plans (SIPs)** are one of the most powerful wealth-building tools available to Indian investors.
+
+**How SIPs work:**
+- Invest a fixed amount monthly (even ₹500 is a great start)
+- Rupee-cost averaging reduces the risk of market timing
+- Compounding works best over 5–10+ year horizons
+
+**Funds Happequity recommends by risk level:**
+
+**Low Risk:** Bandhan Large Cap (Risk: 25), Union Large-cap (25), Quant Large-cap (25), Tata Dividend Yield (30)
+
+**Moderate Risk:** Bandhan Multi-cap (40), Bandhan Hybrid Equity (50), Edelweiss Balanced Advantage (50), Samco ELSS Tax Saver (50)
+
+**High Risk/Growth:** Bandhan Small-cap (80), Edelweiss Small-cap (80), Axis Value Fund (75)
+
+**Tax saving (ELSS):** Samco ELSS, Mahindra Manulife ELSS, Baroda BNP Paribas ELSS — claim up to ₹1.5 lakh deduction under Section 80C, 3-year lock-in.
+
+⚠️ This is general educational information. Please consult a SEBI-registered advisor and review official documentation before investing.`;
+  }
+  if (t.includes('scam') || t.includes('fraud') || t.includes('upi') || t.includes('digital arrest') || t.includes('phishing')) {
+    return `The **FinXForce 2026 Case Files** cover 12 critical scams. Here are the most common ones:
+
+**🔴 Case #02 — Digital Arrest (Invisible Prison)**
+Fake CBI/police on video call claim you're "digitally arrested." They isolate you for hours.
+✅ **Reality:** No Indian law agency EVER arrests via video call. Hang up immediately.
+
+**🔴 Case #11 — UPI Collect Request (Reverse Transfer)**
+Scammer says they "accidentally" sent money and asks you to "return" it. You enter PIN and send money — you never received anything.
+✅ **Golden Rule:** You only enter UPI PIN to SEND. You NEVER need a PIN to receive.
+
+**🔴 Case #08 — AI Voice Clone**
+AI clones a family member's voice from 10 seconds of social media. Calls you in fake emergency.
+✅ **Protection:** Set a secret family safe word. Call back on their known number.
+
+**🔴 Case #07 — Fake Task Scam (WhatsApp/Telegram Jobs)**
+Pay ₹200 first, then ask you to "invest" to unlock earnings. Classic Ponzi.
+✅ **Rule:** Real jobs pay YOU. You never pay to get your salary.
+
+**Emergency:** If scammed, call **1930** immediately. First 60 minutes are critical.
+Report at: www.cybercrime.gov.in
+
+Would you like the full FinXForce 2026 Scam Awareness Guide covering all 12 cases?`;
+  }
+  if (t.includes('demat') || t.includes('wealthy') || t.includes('trading') || t.includes('tradingguru')) {
+    return `**Wealthy App Demat Account** — Happequity's recommended platform:
+- ✅ ₹0 account opening
+- ✅ ₹0 AMC for year one
+- ✅ ₹0 brokerage on delivery trades
+- 🎁 FREE Options Trading Course worth ₹999 on account opening
+
+**TradingGuru Courses** (thetradinguru.com):
+- **Fundamental Analysis** (Live Project): ₹1,999 — analyse companies, read financials
+- **Technical Analysis Masterclass**: ₹999 — chart reading, price action, indicators
+- **Options Strategy**: ₹999 — calls, puts, spreads, income strategies
+- **Fakeout Strategy**: ₹1,999 — identify and profit from false breakouts
+All courses: Lifetime access.
+
+⚠️ This is general educational information. Please consult a SEBI-registered advisor and review official documentation before investing.`;
+  }
+  if (t.includes('health') || t.includes('insurance') || t.includes('motor')) {
+    return `**Happequity's Insurance Partners:**
+
+**Health Insurance:**
+- Care Health — wide hospital network
+- Niva Bupa — wellness benefits, cashless network
+- Tata AIG — critical illness add-ons
+- ICICI Lombard — strong claim settlement ratio
+- HDFC Ergo — excellent for family floater plans
+
+**Motor Insurance:**
+- Acko — digital-first, fast claims
+- Digit — flexible plans for used cars
+- Tata AIG, HDFC Ergo, IndusInd — comprehensive options
+
+**Travel Insurance:**
+- Tata AIG & Care Health — medical emergencies, trip cancellation, lost baggage
+
+**Key advice:** Always check the claim settlement ratio (aim above 95%), read the policy document fully, and honestly disclose pre-existing conditions.
+
+⚠️ This is general educational information. Please consult a SEBI-registered advisor and review official documentation before investing.`;
+  }
+  if (t.includes('kit') || t.includes('start smart') || t.includes('₹29') || t.includes('29')) {
+    return `**Start Smart Investing Kits** — Happequity's entry-level investor education packages:
+
+**🥉 Starter Kit — ₹29**
+- Scam Awareness Guide (FinXForce Case Files PDF)
+- Basic Investing Guide
+- Perfect entry point for complete beginners
+
+**🥈 Growth Kit — ₹49**
+- Everything in Starter Kit
+- Course Completion Certificate
+- Assisted Demat Account Setup with our team
+
+**🥇 Pro Investor Kit — ₹99**
+- Everything in Growth Kit
+- Expert Consultancy session
+- Weekly Stock Picks
+- Portfolio Strategy guidance
+- Economic Times Analysis Report
+- Options Trading & Strategies Course
+
+These kits are designed to give you a head start in financial literacy at an accessible price point. Want to know more about any specific tier?`;
+  }
+  if (t.includes('80c') || t.includes('tax')) {
+    return `**Section 80C Tax Benefits for Investors:**
+
+Section 80C of the Income Tax Act allows you to reduce your taxable income by up to **₹1.5 lakh per year** through qualifying investments.
+
+**Eligible investments relevant to Happequity clients:**
+- **ELSS Mutual Funds** (Equity Linked Savings Scheme) — 3-year lock-in, highest returns potential among 80C options
+- **Life Insurance Premiums** — including HDFC Sanchay Plus premiums
+- **PPF** (Public Provident Fund) — 15-year lock-in
+- **5-year Bank FDs** — safe but lower returns
+
+**ELSS Tax Math Example:**
+If you're in the 30% tax bracket and invest ₹1.5 lakh in ELSS:
+- Tax saved: ₹45,000
+- Plus the investment grows with the market over 3+ years
+
+**After 3 years on ELSS:** Long Term Capital Gains (LTCG) at 10% applies on gains above ₹1 lakh.
+
+⚠️ This is general educational information. Please consult a SEBI-registered advisor and review official documentation before investing.`;
+  }
+  return `Thank you for your question! I'm RIYA, your Happequity financial guide. I can help with:
+
+- **Mutual Funds & SIPs** — systematic wealth building, risk-categorised funds
+- **HDFC Sanchay Plus** — guaranteed income, zero-risk savings plans
+- **Health, Motor & Travel Insurance** — from trusted partners
+- **Wealthy Demat Account** — zero-cost market entry
+- **TradingGuru Courses** — professional trading education
+- **Start Smart Kits** — ₹29 to ₹99 investor starter packs
+- **FinXForce Scam Awareness** — protecting your digital finances
+
+Could you tell me more about what you'd like to explore? I'm here to provide clear, honest, educational guidance.
+
+⚠️ This is general educational information. Please consult a SEBI-registered advisor before making investment decisions.`;
+}
+
+async function getGeminiReply() {
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${CONFIG.GEMINI_MODEL}:generateContent`;
+  const contents = conversationHistory.map(msg => ({
+    role: msg.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: msg.content }]
+  }));
+
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-goog-api-key': CONFIG.GEMINI_API_KEY
+    },
+    body: JSON.stringify({
+      systemInstruction: {
+        parts: [{ text: SYSTEM_PROMPT }]
+      },
+      contents,
+      generationConfig: {
+        temperature: 0.45,
+        maxOutputTokens: 1200
+      }
+    })
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error?.message || 'Gemini API error');
+  }
+
+  const text = data.candidates?.[0]?.content?.parts
+    ?.map(part => part.text || '')
+    .join('')
+    .trim();
+
+  return text || 'I could not generate a response. Please try again.';
+}
+
+/* ── SEND MESSAGE ── */
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text) return;
+  appendMsg('user', text);
+  input.value = ''; input.style.height = 'auto';
+  userMsgCount++;
+  const sendBtn = document.getElementById('sendBtn');
+  sendBtn.disabled = true;
+  conversationHistory.push({role:'user',content:text});
+  showTyping();
+
+  try {
+    let reply;
+    if (!CONFIG.GEMINI_API_KEY || CONFIG.GEMINI_API_KEY === 'YOUR_GOOGLE_AI_STUDIO_API_KEY') {
+      await new Promise(r=>setTimeout(r,1100+Math.random()*600));
+      reply = demoReply(text);
+    } else {
+      reply = await getGeminiReply();
+    }
+    hideTyping();
+    conversationHistory.push({role:'assistant',content:reply});
+    appendMsg('riya', reply);
+    aiResponseCount++;
+    if (aiResponseCount >= CONFIG.LEAD_TRIGGER_AFTER && !leadShown) {
+      setTimeout(showLeadPanel, 1400);
+    }
+  } catch(err) {
+    hideTyping();
+    appendMsg('riya','⚠️ **Connection error:** ' + err.message + '. Please check your configuration and try again.');
+  }
+  sendBtn.disabled = false;
+  input.focus();
+}
+
+/* ── SHORTCUT ── */
+function askAbout(text) {
+  document.getElementById('userInput').value = text;
+  sendMessage();
+}
+
+/* ── LEAD PANEL ── */
+function showLeadPanel() {
+  if (leadSubmitted) return;
+  leadShown = true;
+  document.getElementById('leadOverlay').classList.add('active');
+  logTraffic({event:'lead_panel_shown',timestamp:new Date().toISOString()});
+}
+
+function dismissLead() {
+  document.getElementById('leadOverlay').classList.remove('active');
+  logTraffic({event:'lead_panel_dismissed',timestamp:new Date().toISOString()});
+  appendMsg('riya',`No problem at all — feel free to keep exploring! If you ever want the free FinXForce Scam Awareness Guide or you'd like our advisor to assist with your financial goals, just say the word. 😊`);
+}
+
+async function handleLeadSubmit() {
+  const name = document.getElementById('leadName').value.trim();
+  const email = document.getElementById('leadEmail').value.trim();
+  const phone = document.getElementById('leadPhone').value.trim();
+  const interest = document.getElementById('leadInterest').value;
+  const errEl = document.getElementById('leadError');
+  errEl.style.display = 'none';
+
+  if (!name) { showErr('Please enter your full name.'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('Please enter a valid email address.'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = 'Sending...';
+
+  const leadData = {
+    type:'lead', name, email, phone, interest,
+    source:'RIYA Chatbot', timestamp:new Date().toISOString(),
+    visitorId, messagesExchanged:userMsgCount,
+    sessionMinutes:Math.floor((Date.now()-sessionStart)/60000)
+  };
+
+  try {
+    if (CONFIG.APPS_SCRIPT_URL && CONFIG.APPS_SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+      await fetch(CONFIG.APPS_SCRIPT_URL,{
+        method:'POST',
+        mode:'no-cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify(leadData)
+      });
+    }
+    if (CONFIG.WHATSAPP_API_URL && phone) sendWhatsApp(phone,name,email);
+
+    leadSubmitted = true;
+    document.getElementById('formState').style.display = 'none';
+    const ss = document.getElementById('successState');
+    ss.style.display = 'flex';
+    logTraffic({event:'lead_captured',email,interest,timestamp:new Date().toISOString()});
+
+    setTimeout(() => {
+      document.getElementById('leadOverlay').classList.remove('active');
+      appendMsg('riya',`Thank you, **${name}**! 🎉 Your FinXForce 2026 Case Files guide has been sent to **${email}**.${phone ? ' A WhatsApp confirmation is on its way too.' : ''} Our advisory team will follow up regarding your interest in **${interest || 'financial planning'}**. Any other questions? I'm right here!`);
+    },2800);
+  } catch(err) {
+    btn.disabled = false; btn.textContent = 'Send Me the Safety Kit →';
+    showErr('Something went wrong. Please try again.');
+  }
+
+  function showErr(msg) {
+    errEl.textContent = msg; errEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Send Me the Safety Kit →';
+  }
+}
+
+async function sendWhatsApp(phone,name,email) {
+  if (!CONFIG.WHATSAPP_API_URL || !CONFIG.WHATSAPP_TOKEN) return;
+  const cleaned = phone.replace(/\D/g,'');
+  const whatsappBody = `Hello ${name}! 👋
+
+Thank you for your interest in Happequity Investments & Finance.
+
+Your *FinXForce 2026 Scam Awareness Guide* (The Case Files) has been sent to ${email}.
+
+Our advisory team will reach out to assist you with your financial goals.
+
+Stay safe & invest smart! 📈
+*Team Happequity* 🛡️
+Happequity Investments & Finance`;
+  const payload = {
+    messaging_product: 'whatsapp',
+    to: cleaned,
+    type: 'text',
+    text: { body: whatsappBody }
+  };
+  try {
+    await fetch(CONFIG.WHATSAPP_API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+CONFIG.WHATSAPP_TOKEN},
+      body:JSON.stringify(payload)
+    });
+  } catch(e) {}
+}
+
+/* ── TEXTAREA AUTO RESIZE ── */
+document.addEventListener('DOMContentLoaded',()=>{
+  const input = document.getElementById('userInput');
+  input.addEventListener('input',()=>{input.style.height='auto';input.style.height=Math.min(input.scrollHeight,120)+'px';});
+  input.addEventListener('keydown',(e)=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}});
+});
+</script>
+</body>
+</html>
