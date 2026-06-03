@@ -44,7 +44,6 @@ html,body{height:100%;font-family:var(--font-body);background:var(--off-white);c
 .header{position:fixed;top:0;left:0;right:0;z-index:200;height:62px;background:var(--white);border-bottom:1px solid var(--sky-mid);display:flex;align-items:center;justify-content:space-between;padding:0 28px;box-shadow:var(--shadow-sm);}
 .brand{display:flex;align-items:center;gap:12px;}
 .brand-logo{height:44px;width:auto;object-fit:contain;}
-.brand-logo-text{width:44px;border-radius:8px;background:var(--navy);color:var(--white);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.25rem;font-weight:600;}
 .brand-divider{width:1px;height:28px;background:var(--sky-mid);}
 .brand-sub{display:flex;flex-direction:column;}
 .brand-riya{font-family:var(--font-display);font-size:1rem;font-weight:600;color:var(--navy);line-height:1;}
@@ -76,14 +75,6 @@ html,body{height:100%;font-family:var(--font-body);background:var(--off-white);c
 .chip-list{display:flex;flex-direction:column;gap:7px;}
 .chip{padding:8px 13px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:7px;font-size:0.78rem;color:rgba(255,255,255,0.65);cursor:pointer;text-align:left;transition:var(--tr);font-family:var(--font-body);}
 .chip:hover{background:rgba(43,135,245,0.16);border-color:rgba(43,135,245,0.35);color:var(--white);}
-
-/* TRAFFIC PANEL */
-.traffic-panel{padding:16px 18px;border-top:1px solid rgba(255,255,255,0.07);background:rgba(0,0,0,0.18);position:relative;z-index:1;}
-.traffic-label{font-size:0.63rem;color:rgba(255,255,255,0.35);letter-spacing:0.9px;text-transform:uppercase;margin-bottom:8px;}
-.traffic-stats{display:flex;gap:12px;}
-.t-stat{flex:1;}
-.t-num{font-size:1.3rem;font-weight:600;color:var(--white);font-family:var(--font-display);line-height:1;}
-.t-sub{font-size:0.65rem;color:rgba(255,255,255,0.35);margin-top:2px;}
 
 /* CHAT MAIN */
 .chat-area{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;position:relative;}
@@ -185,7 +176,7 @@ select.form-control{cursor:pointer;}
 <!-- HEADER -->
 <header class="header">
   <div class="brand">
-    <div class="brand-logo brand-logo-text" aria-label="Happequity">H</div>
+    <img src="happequity-logo.png" alt="Happequity" class="brand-logo">
     <div class="brand-divider"></div>
     <div class="brand-sub">
       <span class="brand-riya">RIYA</span>
@@ -342,8 +333,6 @@ select.form-control{cursor:pointer;}
    CONFIGURATION — Update these values before deploying
    ============================================================ */
 const CONFIG = {
-  GEMINI_API_KEY: "",
-  GEMINI_MODEL: "gemini-2.5-flash",
   APPS_SCRIPT_URL: "https://script.google.com/macros/s/AKfycbzkbdlEM2FVkykbhyjcXmNyS85vEN9zaDxFZLvPGDsiQKeK1hVVxb5f8MotxJf--7HZ/exec",
   WHATSAPP_API_URL:  "",
   WHATSAPP_TOKEN:    "",
@@ -509,21 +498,37 @@ let userMsgCount = 0;
 let sessionStart = Date.now();
 let visitorId = Math.random().toString(36).slice(2,7).toUpperCase();
 
-/* ── TIMER ── */
-setInterval(() => {
-  const el = document.getElementById('sessionTime');
-  if (el) el.textContent = Math.floor((Date.now()-sessionStart)/60000) + 'm';
-}, 15000);
-
 /* ── TRAFFIC LOG ── */
-function logTraffic(payload) {
-  if (!CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL') return;
-  fetch(CONFIG.APPS_SCRIPT_URL, {
+function backendUrl() {
+  return (CONFIG.APPS_SCRIPT_URL || '').trim();
+}
+
+function backendReady() {
+  const url = backendUrl();
+  return url && url !== 'YOUR_GOOGLE_APPS_SCRIPT_URL';
+}
+
+function postToBackend(payload) {
+  if (!backendReady()) return Promise.resolve(false);
+
+  const body = JSON.stringify(payload);
+  if (navigator.sendBeacon) {
+    const blob = new Blob([body], {type:'text/plain;charset=utf-8'});
+    if (navigator.sendBeacon(backendUrl(), blob)) {
+      return Promise.resolve(true);
+    }
+  }
+
+  return fetch(backendUrl(), {
     method:'POST',
     mode:'no-cors',
     headers:{'Content-Type':'text/plain;charset=utf-8'},
-    body: JSON.stringify({type:'traffic', visitorId, ...payload})
-  }).catch(()=>{});
+    body
+  }).then(()=>true);
+}
+
+function logTraffic(payload) {
+  postToBackend({type:'traffic', visitorId, ...payload}).catch(()=>{});
 }
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -595,6 +600,36 @@ function hideTyping() { const e=document.getElementById('typingInd'); if(e) e.re
 /* ── DEMO RESPONSES ── */
 function demoReply(text) {
   const t = text.toLowerCase();
+  const disclaimer = '\n\n⚠️ This is general educational information. Please consult a SEBI-registered advisor and review official documentation before investing.';
+  const hasAny = (words) => words.some(word => t.includes(word));
+
+  if (hasAny(['hello','hi ','hey','namaste','good morning','good evening'])) {
+    return `Namaste, I am RIYA. Ask me anything around SIPs, mutual funds, insurance, demat accounts, Sanchay Plus, tax saving, or scam safety. I will keep it practical and plain-English, and if something needs personalised advice I will tell you clearly.${disclaimer}`;
+  }
+
+  if (hasAny(['beginner','how much','start investing','first investment','salary','monthly invest','monthly investment','portfolio'])) {
+    return `A good beginner plan is usually built in layers, not in one big jump.
+
+1. Keep an emergency fund first: ideally 3 to 6 months of expenses.
+2. Protect the downside: basic health insurance and term cover matter before aggressive investing.
+3. Start SIPs small and consistent: even Rs 500 to Rs 2,000/month is enough to build the habit.
+4. Choose risk by time horizon: large-cap or balanced funds for steadier journeys, small-cap only for long horizons and higher volatility tolerance.
+5. Review every 6 to 12 months, not every market dip.
+
+If you share your goal, time horizon, and comfort with risk, I can explain the general type of product that usually fits that situation without pretending it is a personalised recommendation.${disclaimer}`;
+  }
+
+  if (hasAny(['compare','difference','better','which is best','risk'])) {
+    return `The clean way to compare financial products is to ask four questions:
+
+- **Is the return guaranteed or market-linked?** Sanchay Plus is guaranteed; mutual funds and stocks are market-linked.
+- **What is the time horizon?** Short goals need stability. Long goals can accept more equity risk.
+- **What is the liquidity?** ELSS has a 3-year lock-in, insurance savings plans have longer commitments, demat holdings are usually more flexible.
+- **What is the main purpose?** Protection, tax saving, wealth creation, regular income, or learning.
+
+There is rarely one universal "best" product. There is usually a better fit for a specific person, goal, and risk comfort.${disclaimer}`;
+  }
+
   if (t.includes('sanchay') || t.includes('hdfc') || t.includes('guaranteed')) {
     return `**HDFC Sanchay Plus** is a traditional life insurance savings plan — meaning your money has **zero market risk** and returns are guaranteed.
 
@@ -754,44 +789,6 @@ Could you tell me more about what you'd like to explore? I'm here to provide cle
 ⚠️ This is general educational information. Please consult a SEBI-registered advisor before making investment decisions.`;
 }
 
-async function getGeminiReply() {
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${CONFIG.GEMINI_MODEL}:generateContent`;
-  const contents = conversationHistory.map(msg => ({
-    role: msg.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: msg.content }]
-  }));
-
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': CONFIG.GEMINI_API_KEY
-    },
-    body: JSON.stringify({
-      systemInstruction: {
-        parts: [{ text: SYSTEM_PROMPT }]
-      },
-      contents,
-      generationConfig: {
-        temperature: 0.45,
-        maxOutputTokens: 1200
-      }
-    })
-  });
-
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(data.error?.message || 'Gemini API error');
-  }
-
-  const text = data.candidates?.[0]?.content?.parts
-    ?.map(part => part.text || '')
-    .join('')
-    .trim();
-
-  return text || 'I could not generate a response. Please try again.';
-}
-
 /* ── SEND MESSAGE ── */
 async function sendMessage() {
   const input = document.getElementById('userInput');
@@ -806,13 +803,8 @@ async function sendMessage() {
   showTyping();
 
   try {
-    let reply;
-    if (!CONFIG.GEMINI_API_KEY || CONFIG.GEMINI_API_KEY === 'YOUR_GOOGLE_AI_STUDIO_API_KEY') {
-      await new Promise(r=>setTimeout(r,1100+Math.random()*600));
-      reply = demoReply(text);
-    } else {
-      reply = await getGeminiReply();
-    }
+    await new Promise(r=>setTimeout(r,800+Math.random()*700));
+    const reply = demoReply(text);
     hideTyping();
     conversationHistory.push({role:'assistant',content:reply});
     appendMsg('riya', reply);
@@ -822,7 +814,7 @@ async function sendMessage() {
     }
   } catch(err) {
     hideTyping();
-    appendMsg('riya','⚠️ **Connection error:** ' + err.message + '. Please check your configuration and try again.');
+    appendMsg('riya','I had trouble preparing that answer. Please try again in a moment, or ask the question a little differently.');
   }
   sendBtn.disabled = false;
   input.focus();
@@ -870,14 +862,7 @@ async function handleLeadSubmit() {
   };
 
   try {
-    if (CONFIG.APPS_SCRIPT_URL && CONFIG.APPS_SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
-      await fetch(CONFIG.APPS_SCRIPT_URL,{
-        method:'POST',
-        mode:'no-cors',
-        headers:{'Content-Type':'text/plain;charset=utf-8'},
-        body:JSON.stringify(leadData)
-      });
-    }
+    await postToBackend(leadData);
     if (CONFIG.WHATSAPP_API_URL && phone) sendWhatsApp(phone,name,email);
 
     leadSubmitted = true;
